@@ -1,3 +1,8 @@
+
+/* --------------------------------
+   PAGE LAYOUT
+-------------------------------- */
+
 .page {
   position: relative;
 
@@ -12,20 +17,49 @@
   overflow: hidden;
   background: var(--color-background);
 
-  /* Shared full-screen positioning */
-  --study-nav-bottom: 48px;
-  --study-controls-bottom: 100px;
+  /* Shared fullscreen positioning */
+  --snapshot-nav-bottom: 48px;
+  --snapshot-controls-bottom: 100px;
 }
 
-.studyGroup {
+/* --------------------------------
+   TOP-RIGHT PAGE CONTROLS
+-------------------------------- */
+
+.pageControls {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Explicitly override flex when hidden */
+.pageControls[hidden],
+.navigationArea[hidden] {
+  display: none !important;
+}
+
+/* --------------------------------
+   SNAPSHOT GROUP
+-------------------------------- */
+
+.snapshotGroup {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  gap: 44px;
 
   width: 100%;
   max-width: calc(100vw - 40px);
 }
+
+/* --------------------------------
+   INTERACTION
+-------------------------------- */
 
 .interaction {
   display: flex;
@@ -37,6 +71,10 @@
   min-height: 120px;
 }
 
+/* --------------------------------
+   NAVIGATION
+-------------------------------- */
+
 .navigationArea {
   position: relative;
   display: flex;
@@ -44,38 +82,11 @@
   justify-content: center;
 }
 
-.infoPanel {
-  position: absolute;
-  top: calc(100% + 14px);
-  left: 50%;
-  transform: translateX(-50%);
+/* --------------------------------
+   FULLSCREEN SNAPSHOTS
+-------------------------------- */
 
-  width: 280px;
-  max-width: calc(100vw - 40px);
-  padding: 20px;
-
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-
-  z-index: 10;
-}
-
-.infoHeading {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
-}
-
-.infoPanel p {
-  margin: 12px 0 0;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.studyGroupFull {
+.snapshotGroupFull {
   position: absolute;
   inset: 0;
 
@@ -100,20 +111,47 @@
 .navigationFull {
   position: absolute;
   left: 50%;
-  bottom: var(--study-nav-bottom, 48px);
+  bottom: var(--snapshot-nav-bottom, 48px);
 
   transform: translateX(-50%);
   z-index: 30;
 }
 
+/* --------------------------------
+   SCREEN READER UTILITIES
+-------------------------------- */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------
+   RESPONSIVE
+-------------------------------- */
 
 @media (max-width: 600px) {
-  .studyGroup {
+  .snapshotGroup {
     gap: 24px;
   }
 
   .page {
-    --study-nav-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    --study-controls-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    --snapshot-nav-bottom:
+      calc(24px + env(safe-area-inset-bottom, 0px));
+
+    --snapshot-controls-bottom:
+      calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pageControls {
+    top: 20px;
+    right: 20px;
   }
 }

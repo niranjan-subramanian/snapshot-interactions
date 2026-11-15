@@ -5,15 +5,16 @@
  * checklist items with completion animations.
  */
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import styles from "./SentenceChecklist.module.css";
 import ResetButton from "../../components/ui/ResetButton";
+import { useSnapshotActions } from "../../components/SnapshotActionsContext";
 
 const EXIT_DURATION = 260;
 const MAX_TASKS = 5;
 const MAX_CHARACTERS = 200;
 
-// Splits the input into sentence-based tasks while preserving punctuation.
+// Splits the input into sentance tasks while preserving punctuation
 function parseSentence(value) {
     const matches = [...value.matchAll(/([^.!?]+)([.!?]+|$)/g)];
 
@@ -25,7 +26,7 @@ function parseSentence(value) {
         .filter((part) => part.text.length > 0);
 }
 
-// Checks both the character limit and the maximum number of tasks.
+// Checks both the character limit and the max number of tasks
 function isWithinLimits(value) {
     if (value.length > MAX_CHARACTERS) {
         return false;
@@ -50,7 +51,23 @@ export default function SentenceChecklist() {
     const generated = phase === "generated";
     const exiting = phase === "exiting";
 
-    // Keeps the outer wrapper at the content's height for smooth layout transitions.
+    const { setActions } = useSnapshotActions();
+
+    useEffect(() => {
+    setActions([
+        {
+        id: "reset",
+        label: "Reset checklist",
+        icon: <ResetIcon />,
+        onClick: resetChecklist,
+        disabled: phase !== "generated",
+        },
+    ]);
+
+    return () => setActions([]);
+    }, [phase, setActions]);
+
+    // Keeps outer wrapper at the content height for smooth layout transitions
     useLayoutEffect(() => {
         const wrapper = wrapperRef.current;
         const content = contentRef.current;
@@ -69,7 +86,7 @@ export default function SentenceChecklist() {
         return () => observer.disconnect();
     }, [phase]);
 
-    // Syncs editable text to React state and rejects changes beyond the limits.
+    // Syncs editable text to rwact state
     function handleInput(event) {
         const editor = event.currentTarget;
         const nextText = editor.textContent ?? "";
@@ -77,7 +94,7 @@ export default function SentenceChecklist() {
         if (!isWithinLimits(nextText)) {
             editor.textContent = text;
 
-            // Restore the caret to the end after rejecting input.
+            // Restore the caret to the end after rejecting input
             const selection = window.getSelection();
             const range = document.createRange();
 
@@ -93,7 +110,7 @@ export default function SentenceChecklist() {
         setText(nextText);
     }
 
-    // Predicts the next text before insertion so invalid input can be blocked.
+    // Predicts next text before insertion so an invalid input can be blocked
     function handleBeforeInput(event) {
         const inputEvent = event.nativeEvent;
         const inputType = inputEvent?.inputType ?? "";
@@ -145,7 +162,7 @@ export default function SentenceChecklist() {
         }
     }
 
-    // Inserts as much plain-text clipboard content as the limits allow.
+    // Inserts as much pasted clipboard content as the limits allow.
     function handlePaste(event) {
         event.preventDefault();
 
@@ -202,7 +219,7 @@ export default function SentenceChecklist() {
         setText(editor.textContent ?? "");
     }
 
-    // Converts the entered sentences into checklist items.
+    // Converts the sentences into checklist items and transitions to the generated phase
     function generateChecklist() {
         if (!canGenerate || phase !== "editing") return;
 
@@ -214,7 +231,7 @@ export default function SentenceChecklist() {
         setPhase("generated");
     }
 
-    // Generates the checklist when Enter is pressed in the editor.
+    // Handles pressing the Enter key to generate the checklist
     function handleKeyDown(event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -222,7 +239,7 @@ export default function SentenceChecklist() {
         }
     }
 
-    // Toggles an individual task's completed state by its index.
+    //  Toggles the completion state of a task and updates the corresponding sentence part
     function toggleTask(index) {
         setCompleted((previous) =>
             previous.includes(index)
@@ -231,7 +248,7 @@ export default function SentenceChecklist() {
         );
     }
 
-    // Plays the exit transition before clearing the checklist and returning to editing.
+    //  Resets the checklist and transitions back to the editing phase
     function resetChecklist() {
         if (exiting) return;
 
@@ -245,7 +262,7 @@ export default function SentenceChecklist() {
         }, EXIT_DURATION);
     }
 
-    // Clears a pending reset timer if the component unmounts.
+    //  Clears the reset timer when the component unmounts to prevent memory leaks
     useLayoutEffect(() => {
         return () => {
             if (resetTimerRef.current) {
@@ -375,17 +392,26 @@ export default function SentenceChecklist() {
                                     );
                                 })}
                             </div>
-
-                            <div className={styles.resetArea}>
-                            <ResetButton
-                                onClick={resetChecklist}
-                                disabled={exiting}
-                            />
-                            </div>
                         </div>
                     )}
                 </div>
             </div>
         </div>
     );
+}
+
+function ResetIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 11a9 9 0 1 1 2.6 6.4" />
+      <path d="M3 4v7h7" />
+    </svg>
+  );
 }

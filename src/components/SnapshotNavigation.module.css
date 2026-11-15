@@ -128,6 +128,22 @@
 }
 
 /* --------------------------------
+   ICON BUTTON TOOL TIPS
+-------------------------------- */
+
+
+.iconButton {
+  position: relative;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+
+/* --------------------------------
    RESPONSIVE
 -------------------------------- */
 

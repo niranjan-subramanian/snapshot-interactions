@@ -1,7 +1,7 @@
 
 :root {
     /* Colours */
-    --color-background: #fafaf9;
+    --color-background: #fafafa;
     --color-surface: #ffffff;
     --color-text: #242424;
     --color-muted: #858585;
@@ -12,7 +12,7 @@
     --color-surface-muted: #f0f0ee;
 
     /* Brand colours */
-    --color-primary: #656b9f;
+    --color-primary: #9b3d3d;
     --color-primary-hover: #565c8c;
     --color-primary-light: #e2e3ec;
     --color-primary-soft: rgba(101, 107, 159, 0.10);
@@ -79,7 +79,7 @@
     --color-surface-muted: #1d1f29;
 
     /* Brand colours */
-    --color-primary: #a0a6d7;
+    --color-primary: #cc8282;
     --color-primary-hover: #b5bae6;
     --color-primary-light: #31354d;
     --color-primary-soft: rgba(160, 166, 215, 0.12);

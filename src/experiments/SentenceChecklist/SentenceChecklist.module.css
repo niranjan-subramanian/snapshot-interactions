@@ -94,7 +94,7 @@
     min-height: 25px;
 
     border: none;
-    border-radius: 7px;
+    border-radius: 8px;
     background: var(--color-hover);
 
     color: var(--color-text-subtle);
@@ -117,13 +117,13 @@
 }
 
 .enterHint:hover {
-    transform: scale(1.06);
+    transform: scale(1);
     background: var(--color-border);
     color: var(--color-muted);
 }
 
 .enterHint:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
 }
 
 /* --------------------------------
@@ -139,7 +139,7 @@
 
 .sentence {
     max-width: 760px;
-    margin-bottom: 28px;
+    margin-bottom: 20px; 
 
     text-align: center;
     font-size: clamp(30px, 2.1vw, 38px);
@@ -183,7 +183,7 @@
 
     background: var(--color-surface);
     border: 0px solid var(--color-border);
-    border-radius: 11px;
+    border-radius: 8px;
 
     box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.035),
@@ -206,20 +206,29 @@
     transition: transform 220ms var(--ease-standard);
 }
 
-.taskCard:hover {
-    transform: scale(1.035);
+/* Unchecked cards */
+.taskCard:not(.taskCompleted):hover {
+    transform: scale(1);
 }
 
-.taskCard:active {
-    transform: scale(0.985);
+.taskCard:not(.taskCompleted):active {
+    transform: scale(0.9);
 }
 
-.taskCompleted {
+/* Completed cards stay pressed down */
+.taskCard.taskCompleted,
+.taskCard.taskCompleted:hover {
     background-color: var(--color-surface-muted);
     color: var(--color-text-subtle);
     border-color: transparent;
     box-shadow: none;
-    transform: scale(0.975);
+
+    transform: scale(0.9);
+}
+
+/* Brief press feedback when unchecking */
+.taskCard.taskCompleted:active {
+    transform: scale(0.87);
 }
 
 /* --------------------------------
@@ -246,7 +255,6 @@
 .checkbox.checked {
     background: var(--color-primary);
     border-color: var(--color-primary);
-    transform: scale(1.04);
 }
 
 .checkbox svg {
@@ -292,18 +300,6 @@
 
 .strikeVisible {
     transform: scaleX(1);
-}
-
-/* --------------------------------
-   RESET
--------------------------------- */
-
-.resetArea {
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-
-  animation: fadeIn 300ms ease 350ms both;
 }
 
 /* --------------------------------

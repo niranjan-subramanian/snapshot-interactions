@@ -1,19 +1,19 @@
 
 import { Link } from "react-router";
 import { snapshots } from "../snapshots";
+import SnapshotIconButton from "./ui/SnapshotIconButton";
 import styles from "./SnapshotNavigation.module.css";
 
 /**
- * Navigation between studies, study information,
- * and the global light/dark theme toggle.
+ * Navigation between snapshots and access to
+ * information about the current snapshot.
  */
 export default function SnapshotNavigation({
   snapshot,
   infoOpen,
   onToggleInfo,
-  theme,
-  onToggleTheme,
-}) { 
+  actions,
+}) {
   const currentIndex = snapshots.findIndex(
     (item) => item.id === snapshot.id
   );
@@ -24,21 +24,22 @@ export default function SnapshotNavigation({
   return (
     <nav
       className={styles.navigation}
-      aria-label="Study navigation"
+      aria-label="Snapshot navigation"
     >
-      {/* Previous and next study */}
       <div className={styles.arrows}>
         {previous ? (
           <Link
             to={previous.path}
             className={styles.iconButton}
-            aria-label="Previous study"
+            aria-label="Previous snapshot"
+            title="Previous snapshot"
           >
             <ArrowLeft />
           </Link>
         ) : (
           <span
             className={`${styles.iconButton} ${styles.disabled}`}
+            aria-hidden="true"
           >
             <ArrowLeft />
           </span>
@@ -48,13 +49,15 @@ export default function SnapshotNavigation({
           <Link
             to={next.path}
             className={styles.iconButton}
-            aria-label="Next study"
+            aria-label="Next snapshot"
+            title="Next snapshot"
           >
             <ArrowRight />
           </Link>
         ) : (
           <span
             className={`${styles.iconButton} ${styles.disabled}`}
+            aria-hidden="true"
           >
             <ArrowRight />
           </span>
@@ -63,58 +66,37 @@ export default function SnapshotNavigation({
 
       <span className={styles.divider} aria-hidden="true" />
 
-      {/* Study information and title */}
       <div className={styles.studyDetails}>
-        <button
-          type="button"
-          className={`${styles.iconButton} ${
-            infoOpen ? styles.active : ""
-          }`}
+        <SnapshotIconButton
+          label={`About ${snapshot.title}`}
           onClick={onToggleInfo}
-          aria-label={`About ${snapshot.title}`}
-          aria-expanded={infoOpen}
+          active={infoOpen}
         >
           <InfoIcon />
-        </button>
+        </SnapshotIconButton>
 
         <div className={styles.studyLabel}>
-
           <span className={styles.title}>
             {snapshot.title.toLowerCase()}
           </span>
         </div>
       </div>
 
-      <span className={styles.divider} aria-hidden="true" />
-
-      {/* Global theme toggle */}
-      <button
-        type="button"
-        className={styles.iconButton}
-        onClick={onToggleTheme}
-        aria-label={`Switch to ${
-          theme === "dark" ? "light" : "dark"
-        } mode`}
-        title={`Switch to ${
-          theme === "dark" ? "light" : "dark"
-        } mode`}
-      >
-        {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-      </button>
+      {actions && (
+        <>
+          <span className={styles.divider} aria-hidden="true" />
+          <div className={styles.actions}>{actions}</div>
+        </>
+      )}
     </nav>
   );
 }
 
 function ArrowLeft() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 5L8 12L15 19" />
     </svg>
   );
@@ -122,14 +104,9 @@ function ArrowLeft() {
 
 function ArrowRight() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 5L16 12L9 19" />
     </svg>
   );
@@ -137,47 +114,11 @@ function ArrowRight() {
 
 function InfoIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.6"
+      strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5M12 8h.01" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
     </svg>
   );
 }
