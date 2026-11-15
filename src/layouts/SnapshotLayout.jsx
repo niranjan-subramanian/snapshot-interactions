@@ -1,14 +1,18 @@
 
 import { useState } from "react";
-import StudyNavigation from "../components/StudyNavigation";
-import StudyInfoModal from "../components/StudyInfoModal";
-import styles from "./StudyLayout.module.css";
+import SnapshotNavigation from "../components/SnapshotNavigation";
+import SnapshotInfoModal from "../components/SnapshotInfoModal";
+import styles from "./SnapshotLayout.module.css";
 
-export default function StudyLayout({ study, theme, onToggleTheme }) {
+export default function SnapshotLayout({
+  snapshot,
+  theme,
+  onToggleTheme,
+}) {
   const [infoOpen, setInfoOpen] = useState(false);
 
-  const StudyComponent = study.component;
-  const isFullScreen = study.layout === "fullscreen";
+  const SnapshotComponent = snapshot.component;
+  const isFullScreen = snapshot.layout === "fullscreen";
 
   return (
     <main className={styles.page}>
@@ -22,7 +26,7 @@ export default function StudyLayout({ study, theme, onToggleTheme }) {
             isFullScreen ? styles.interactionFull : ""
           }`}
         >
-          <StudyComponent />
+          <SnapshotComponent />
         </div>
 
         <div
@@ -30,8 +34,8 @@ export default function StudyLayout({ study, theme, onToggleTheme }) {
             isFullScreen ? styles.navigationFull : ""
           }`}
         >
-          <StudyNavigation
-            study={study}
+          <SnapshotNavigation
+            snapshot={snapshot}
             infoOpen={infoOpen}
             onToggleInfo={() => setInfoOpen(true)}
             theme={theme}
@@ -40,8 +44,8 @@ export default function StudyLayout({ study, theme, onToggleTheme }) {
         </div>
       </div>
 
-      <StudyInfoModal
-        study={study}
+      <SnapshotInfoModal
+        snapshot={snapshot}
         isOpen={infoOpen}
         onClose={() => setInfoOpen(false)}
       />

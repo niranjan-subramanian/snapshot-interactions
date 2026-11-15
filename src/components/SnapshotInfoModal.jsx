@@ -1,9 +1,9 @@
 
 import { useEffect, useRef } from "react";
-import styles from "./StudyInfoModal.module.css";
+import styles from "./SnapshotInfoModal.module.css";
 
-export default function StudyInfoModal({
-  study,
+export default function SnapshotInfoModal({
+  snapshot,
   isOpen,
   onClose,
 }) {
@@ -35,13 +35,13 @@ export default function StudyInfoModal({
         event.preventDefault();
         onClose();
       }}
-      aria-labelledby="study-info-title"
+      aria-labelledby="snapshot-info-title"
     >
       <button
         type="button"
         className={styles.closeButton}
         onClick={onClose}
-        aria-label="Close study information"
+        aria-label="Close snapshot information"
       >
         <svg
           viewBox="0 0 24 24"
@@ -57,14 +57,14 @@ export default function StudyInfoModal({
       <div className={styles.content}>
 
         <h2
-          id="study-info-title"
+          id="snapshot-info-title"
           className={styles.title}
         >
-          {study.title}
+          {snapshot.title}
         </h2>
 
         <p className={styles.description}>
-          {study.description}
+          {snapshot.description}
         </p>
       </div>
     </dialog>

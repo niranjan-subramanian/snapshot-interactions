@@ -1,25 +1,25 @@
 
 import { Link } from "react-router";
-import { studies } from "../studies";
-import styles from "./StudyNavigation.module.css";
+import { snapshots } from "../snapshots";
+import styles from "./SnapshotNavigation.module.css";
 
 /**
  * Navigation between studies, study information,
  * and the global light/dark theme toggle.
  */
-export default function StudyNavigation({
-  study,
+export default function SnapshotNavigation({
+  snapshot,
   infoOpen,
   onToggleInfo,
   theme,
   onToggleTheme,
-}) {
-  const currentIndex = studies.findIndex(
-    (item) => item.id === study.id
+}) { 
+  const currentIndex = snapshots.findIndex(
+    (item) => item.id === snapshot.id
   );
 
-  const previous = studies[currentIndex - 1];
-  const next = studies[currentIndex + 1];
+  const previous = snapshots[currentIndex - 1];
+  const next = snapshots[currentIndex + 1];
 
   return (
     <nav
@@ -71,7 +71,7 @@ export default function StudyNavigation({
             infoOpen ? styles.active : ""
           }`}
           onClick={onToggleInfo}
-          aria-label={`About ${study.title}`}
+          aria-label={`About ${snapshot.title}`}
           aria-expanded={infoOpen}
         >
           <InfoIcon />
@@ -80,7 +80,7 @@ export default function StudyNavigation({
         <div className={styles.studyLabel}>
 
           <span className={styles.title}>
-            {study.title.toLowerCase()}
+            {snapshot.title.toLowerCase()}
           </span>
         </div>
       </div>

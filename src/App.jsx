@@ -7,15 +7,15 @@ import {
   useParams,
 } from "react-router";
 
-import { studies } from "./studies";
-import StudyLayout from "./layouts/StudyLayout";
+import { snapshots } from "./snapshots";
+import SnapshotLayout from "./layouts/SnapshotLayout";
 import styles from "./App.module.css";
 
 const EXIT_DURATION = 150;
 const ENTER_DURATION = 220;
 
 /**
- * Reads the saved theme, falling back to the user's system preference.
+ * Reads the saved theme, falling back to the system preference.
  */
 function getInitialTheme() {
   const savedTheme = localStorage.getItem("portfolio-theme");
@@ -30,52 +30,49 @@ function getInitialTheme() {
 }
 
 /**
- * Finds the requested study and transitions between studies.
+ * Finds the requested snapshot and manages transitions.
  *
- * Exit -> switch study -> enter.
- *
- * Only one study is rendered at a time, preventing overlapping
- * navigation bars and interaction elements.
+ * Exit -> switch snapshot -> enter.
  */
-function StudyPage({ theme, onToggleTheme }) {
-  const { studyId } = useParams();
+function SnapshotPage({ theme, onToggleTheme }) {
+  const { slug } = useParams();
 
-  const requestedStudy = studies.find(
-    (item) => item.id === studyId
+  const requestedSnapshot = snapshots.find(
+    (item) => item.slug === slug
   );
 
-  const [displayedStudy, setDisplayedStudy] = useState(
-    () => requestedStudy ?? studies[0]
+  const [displayedSnapshot, setDisplayedSnapshot] = useState(
+    () => requestedSnapshot ?? snapshots[0]
   );
 
   const [phase, setPhase] = useState("idle");
   const [direction, setDirection] = useState(1);
 
   const timerRef = useRef(null);
-  const displayedRef = useRef(displayedStudy);
+  const displayedRef = useRef(displayedSnapshot);
 
-  // Keep a reference to the currently displayed study.
+  // Keep a reference to the currently displayed snapshot.
   useEffect(() => {
-    displayedRef.current = displayedStudy;
-  }, [displayedStudy]);
+    displayedRef.current = displayedSnapshot;
+  }, [displayedSnapshot]);
 
   /**
    * Responds to route changes.
-   * First animates the current study out, then switches content.
+   * Animates the current snapshot out before switching content.
    */
   useEffect(() => {
-    if (!requestedStudy) return;
+    if (!requestedSnapshot) return;
 
-    const currentStudy = displayedRef.current;
+    const currentSnapshot = displayedRef.current;
 
-    if (currentStudy.id === requestedStudy.id) return;
+    if (currentSnapshot.id === requestedSnapshot.id) return;
 
-    const currentIndex = studies.findIndex(
-      (item) => item.id === currentStudy.id
+    const currentIndex = snapshots.findIndex(
+      (item) => item.id === currentSnapshot.id
     );
 
-    const nextIndex = studies.findIndex(
-      (item) => item.id === requestedStudy.id
+    const nextIndex = snapshots.findIndex(
+      (item) => item.id === requestedSnapshot.id
     );
 
     const nextDirection = nextIndex > currentIndex ? 1 : -1;
@@ -86,13 +83,13 @@ function StudyPage({ theme, onToggleTheme }) {
     setPhase("exit");
 
     timerRef.current = window.setTimeout(() => {
-      displayedRef.current = requestedStudy;
-      setDisplayedStudy(requestedStudy);
+      displayedRef.current = requestedSnapshot;
+      setDisplayedSnapshot(requestedSnapshot);
       setPhase("enter");
     }, EXIT_DURATION);
 
     return () => window.clearTimeout(timerRef.current);
-  }, [requestedStudy]);
+  }, [requestedSnapshot]);
 
   /**
    * Finishes the entrance animation.
@@ -107,8 +104,8 @@ function StudyPage({ theme, onToggleTheme }) {
     return () => window.clearTimeout(timer);
   }, [phase]);
 
-  if (!requestedStudy) {
-    return <Navigate to={studies[0].path} replace />;
+  if (!requestedSnapshot) {
+    return <Navigate to={snapshots[0].path} replace />;
   }
 
   const animationClass =
@@ -125,12 +122,12 @@ function StudyPage({ theme, onToggleTheme }) {
   return (
     <div className={styles.transitionRoot}>
       <div
-        key={displayedStudy.id}
+        key={displayedSnapshot.id}
         className={`${styles.studyLayer} ${animationClass}`}
         inert={phase === "exit" || phase === "enter"}
       >
-        <StudyLayout
-          study={displayedStudy}
+        <SnapshotLayout
+          snapshot={displayedSnapshot}
           theme={theme}
           onToggleTheme={onToggleTheme}
         />
@@ -160,13 +157,13 @@ export default function App() {
     <Routes>
       <Route
         path="/"
-        element={<Navigate to={studies[0].path} replace />}
+        element={<Navigate to={snapshots[0].path} replace />}
       />
 
       <Route
-        path="/studies/:studyId"
+        path="/snapshots/:slug"
         element={
-          <StudyPage
+          <SnapshotPage
             theme={theme}
             onToggleTheme={toggleTheme}
           />
@@ -175,7 +172,7 @@ export default function App() {
 
       <Route
         path="*"
-        element={<Navigate to={studies[0].path} replace />}
+        element={<Navigate to={snapshots[0].path} replace />}
       />
     </Routes>
   );
