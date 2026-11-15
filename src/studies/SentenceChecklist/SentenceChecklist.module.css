@@ -1,0 +1,425 @@
+/* --------------------------------
+    SENTENCE CHECKLIST LAYOUT
+-------------------------------- */
+
+.root {
+    width: min(1000px, calc(100vw - 48px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.heightWrapper {
+    width: 100%;
+    overflow: visible;
+    transition: height 480ms var(--ease-standard);
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --------------------------------
+   EDITING
+-------------------------------- */
+
+.editor {
+    width: 100%;
+    max-width: 760px;
+    animation: fadeIn 250ms ease both;
+}
+
+.inputLine {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    text-align: center;
+    font-size: clamp(30px, 2.1vw, 38px);
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.035em;
+
+    cursor: text;
+}
+
+.editable {
+    display: inline;
+    min-width: 1px;
+    min-height: 1em;
+
+    color: var(--color-text);
+    outline: none;
+    border: none;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    caret-color: var(--color-text);
+
+    cursor: text;
+}
+
+.placeholder {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    pointer-events: none;
+
+    color: var(--color-text-faint);
+    text-align: center;
+
+    transition: opacity var(--duration-fast) ease;
+}
+
+.inputLine:focus-within .placeholder {
+    opacity: 0;
+}
+
+.enterHint {
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    margin-left: 10px;
+    padding: 4px 9px;
+    min-height: 25px;
+
+    border: none;
+    border-radius: 7px;
+    background: var(--color-hover);
+
+    color: var(--color-text-subtle);
+    font-family: inherit;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-regular);
+    line-height: 1;
+    letter-spacing: -0.015em;
+
+    cursor: pointer;
+    transform-origin: center;
+
+    animation: hintIn 200ms ease backwards;
+
+    transition: transform 180ms var(--ease-standard);
+}
+
+.enterHint span {
+    font-size: 13px;
+}
+
+.enterHint:hover {
+    transform: scale(1.06);
+    background: var(--color-border);
+    color: var(--color-muted);
+}
+
+.enterHint:active {
+    transform: scale(0.95);
+}
+
+/* --------------------------------
+   GENERATED SENTENCE
+-------------------------------- */
+
+.generated {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.sentence {
+    max-width: 760px;
+    margin-bottom: 28px;
+
+    text-align: center;
+    font-size: clamp(30px, 2.1vw, 38px);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-normal);
+    letter-spacing: -0.035em;
+
+    animation: sentenceIn 400ms ease both;
+}
+
+.sentencePart {
+    color: var(--color-text-faint);
+}
+
+.sentencePartComplete {
+    color: var(--color-text);
+}
+
+/* --------------------------------
+   CHECKLIST CARDS
+-------------------------------- */
+
+.taskList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+}
+
+.taskCard {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    width: max-content;
+    max-width: 100%;
+    min-height: 38px;
+    padding: 8px 13px 8px 10px;
+
+    background: var(--color-surface);
+    border: 0px solid var(--color-border);
+    border-radius: 11px;
+
+    box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.035),
+    0 1px 2px rgba(0, 0, 0, 0.015);
+
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--text-ui);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--letter-spacing);
+    line-height: 1.45;
+    text-align: left;
+
+    cursor: pointer;
+    transform-origin: center;
+
+    animation: cardIn 450ms var(--ease-standard) backwards;
+    animation-delay: calc(120ms + var(--card-index) * 65ms);
+
+    transition: transform 220ms var(--ease-standard);
+}
+
+.taskCard:hover {
+    transform: scale(1.035);
+}
+
+.taskCard:active {
+    transform: scale(0.985);
+}
+
+.taskCompleted {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-subtle);
+    border-color: transparent;
+    box-shadow: none;
+    transform: scale(0.975);
+}
+
+/* --------------------------------
+   CHECKBOX
+-------------------------------- */
+
+.checkbox {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1.5px solid var(--color-border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-surface);
+
+    transition: transform 220ms var(--ease-standard);
+}
+
+.checkbox.checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.04);
+}
+
+.checkbox svg {
+    width: 12px;
+    height: 12px;
+}
+
+.checkbox path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    transition: stroke-dashoffset 240ms ease 60ms;
+}
+
+.checkbox.checked path {
+    stroke-dashoffset: 0;
+}
+
+/* --------------------------------
+   TASK TEXT + STRIKETHROUGH
+-------------------------------- */
+
+.taskText {
+    position: relative;
+    display: inline-block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.strike {
+    position: absolute;
+    top: 51%;
+    left: 0;
+    right: 0;
+    height: 1px;
+
+    background: currentColor;
+
+    transform: scaleX(0);
+    transform-origin: left center;
+
+    transition: transform 270ms var(--ease-standard);
+}
+
+.strikeVisible {
+    transform: scaleX(1);
+}
+
+/* --------------------------------
+   RESET
+-------------------------------- */
+
+.resetArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+
+  animation: fadeIn 300ms ease 350ms both;
+}
+
+/* --------------------------------
+   EXIT
+-------------------------------- */
+
+.exiting {
+    pointer-events: none;
+    animation: fadeOutUp 260ms ease both;
+}
+
+/* --------------------------------
+   KEYFRAMES
+-------------------------------- */
+
+@keyframes fadeIn {
+    from {
+    opacity: 0;
+    }
+
+    to {
+    opacity: 1;
+    }
+}
+
+@keyframes hintIn {
+    from {
+    opacity: 0;
+    transform: scale(0.9);
+    }
+
+    to {
+    opacity: 1;
+    transform: scale(1);
+    }
+}
+
+@keyframes sentenceIn {
+    from {
+    opacity: 0.3;
+    }
+
+    to {
+    opacity: 1;
+    }
+}
+
+@keyframes cardIn {
+    from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeOutUp {
+    from {
+    opacity: 1;
+    transform: translateY(0);
+    }
+
+    to {
+    opacity: 0;
+    transform: translateY(-8px);
+    }
+}
+
+/* --------------------------------
+   RESPONSIVE
+-------------------------------- */
+
+@media (max-width: 600px) {
+    .root {
+        width: calc(100vw - 32px);
+    }
+
+    .inputLine,
+    .sentence {
+        font-size: 22px;
+    }
+
+    .sentence {
+        margin-bottom: 24px;
+    }
+
+    .taskCard {
+        min-height: 38px;
+        padding: 8px 12px 8px 10px;
+        font-size: 13px;
+        gap: 9px;
+    }
+
+    .checkbox {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+/* --------------------------------
+   ACCESSIBILITY
+-------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .heightWrapper,
+    .enterHint,
+    .taskCard,
+    .checkbox,
+    .checkbox path,
+    .strike,
+    .sentencePart,
+    .resetArea {
+        animation: none !important;
+        transition: none !important;
+    }
+}

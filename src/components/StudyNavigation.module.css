@@ -1,0 +1,142 @@
+/* --------------------------------
+   NAVIGATION LAYOUT
+-------------------------------- */
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: max-content;
+  max-width: calc(100vw - 40px);
+  background: transparent;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+    flex-shrink: 0;
+
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* --------------------------------
+   STUDY DETAILS
+-------------------------------- */
+
+.studyDetails {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+/* --------------------------------
+   ARROW CONTROLS
+-------------------------------- */
+
+.arrows {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+
+  flex-shrink: 0;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+
+  color: var(--color-text);
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    opacity var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.iconButton svg {
+  width: 16px;
+  height: 15px;
+}
+
+.iconButton:hover {
+  background: var(--color-hover);
+}
+
+.iconButton:active {
+  transform: scale(0.9);
+}
+
+.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+  cursor: default;
+}
+
+.active {
+  background: var(--color-hover);
+}
+
+/* --------------------------------
+   DIVIDER
+-------------------------------- */
+
+.divider {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* --------------------------------
+   STUDY LABEL
+-------------------------------- */
+
+.studyLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+
+  min-width: 0;
+
+  font-size: var(--text-body);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--letter-spacing);
+  white-space: nowrap;
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: var(--color-text);
+  font-weight: inherit;
+}
+
+/* --------------------------------
+   RESPONSIVE
+-------------------------------- */
+
+@media (max-width: 480px) {
+  .left {
+    gap: 10px;
+  }
+
+  .studyLabel {
+    gap: 6px;
+  }
+}

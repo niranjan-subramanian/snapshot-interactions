@@ -1,0 +1,99 @@
+
+.transitionRoot {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.studyLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Forward: current study moves left */
+
+.exitForward {
+  animation: exitLeft 150ms ease-in both;
+}
+
+.enterForward {
+  animation: enterRight 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Backward: current study moves right */
+
+.exitBackward {
+  animation: exitRight 150ms ease-in both;
+}
+
+.enterBackward {
+  animation: enterLeft 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Exit animations */
+
+@keyframes exitLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes exitRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+/* Entrance animations */
+
+@keyframes enterRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes enterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  .exitForward,
+  .exitBackward,
+  .enterForward,
+  .enterBackward {
+    animation: none;
+  }
+}

@@ -1,0 +1,70 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import "./tokens.css";
+
+/* Global reset */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    letter-spacing: var(--letter-spacing);
+    -webkit-font-smoothing: antialiased;
+    transition:
+    background-color var(--duration-theme) var(--ease-theme),
+    color var(--duration-theme) var(--ease-theme);
+    
+}
+
+body,
+button,
+a,
+[role="button"] {
+  cursor: url('/bibata.svg') 4 3, auto;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 3px;
+}
+
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+

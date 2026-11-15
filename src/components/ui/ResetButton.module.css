@@ -1,0 +1,53 @@
+.resetButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+
+    color: var(--color-text-subtle);
+    font-family: inherit;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--letter-spacing);
+    transform-origin: center center;
+
+
+    cursor: pointer;
+
+    transition:
+    color 180ms ease,
+    transform 180ms var(--ease-standard);
+}
+
+.resetButton svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.resetButton:hover:not(:disabled) {
+    color: var(--color-muted);
+    transform: scale(1.04);
+}
+
+.resetButton:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.resetButton:disabled {
+    cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .resetButton {
+        animation: none;
+        transition: none;
+    }
+}

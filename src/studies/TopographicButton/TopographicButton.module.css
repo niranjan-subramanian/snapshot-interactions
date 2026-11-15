@@ -1,0 +1,175 @@
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 120px;
+}
+
+/* --------------------------------
+   BUTTON — LIGHT THEME
+-------------------------------- */
+
+.button {
+  /* Component-specific colour tokens */
+  --topology-hover-bg: #242827;
+  --topology-hover-text: #f2f3ef;
+  --topology-line: #e0e3df;
+  --topology-glow: rgba(222, 232, 223, 0.16);
+  --topology-trail: #f05a3b;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+
+  width: 250px;
+  height: 80px;
+  padding: 0 var(--space-6);
+
+  border: 1px solid var(--color-muted);
+  border-radius: 999px;
+
+  background: transparent;
+  color: var(--color-text);
+
+  font-family: var(--font-body);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--letter-spacing);
+  line-height: var(--leading-tight);
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    background var(--duration-normal) var(--ease-standard),
+    color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    transform 300ms var(--ease-standard);
+}
+
+.button:hover,
+.button:focus-visible {
+  background: var(--topology-hover-bg);
+  color: var(--topology-hover-text);
+  border-color: var(--topology-hover-bg);
+  transform: scale(1.075);
+}
+
+.button:active {
+  transform: scale(0.975);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--topology-trail);
+  outline-offset: 5px;
+}
+
+/* --------------------------------
+   BUTTON — DARK THEME
+-------------------------------- */
+
+:global([data-theme="dark"]) .button {
+  --topology-hover-bg: #eeefeb;
+  --topology-hover-text: #242a25;
+  --topology-line: #647468;
+  --topology-glow: rgba(76, 101, 83, 0.14);
+
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-muted);
+}
+
+:global([data-theme="dark"]) .button:hover,
+:global([data-theme="dark"]) .button:focus-visible {
+  background: var(--topology-hover-bg);
+  color: var(--topology-hover-text);
+  border-color: var(--topology-hover-bg);
+}
+
+/* --------------------------------
+   TOPOGRAPHIC CANVAS
+-------------------------------- */
+
+.terrain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* --------------------------------
+   FOREGROUND LABEL
+-------------------------------- */
+
+.label {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.label::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+
+  inset: -5px -10px;
+
+  background: var(--topology-hover-bg);
+  opacity: 0;
+  filter: blur(18px);
+
+  pointer-events: none;
+
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+.button:hover .label::before,
+.button:focus-visible .label::before {
+  opacity: 0.65;
+}
+
+/* Light theme: dark shadow against charcoal */
+.button:hover .label,
+.button:focus-visible .label {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.7),
+    0 0 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Dark theme: light shadow against ivory */
+:global([data-theme="dark"]) .button:hover .label,
+:global([data-theme="dark"]) .button:focus-visible .label {
+  text-shadow:
+    0 1px 3px rgba(255, 255, 255, 0.85),
+    0 0 12px rgba(255, 255, 255, 0.55);
+}
+
+/* --------------------------------
+   ACCESSIBILITY
+-------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .label {
+    transition: none;
+  }
+
+  .button:hover,
+  .button:focus-visible,
+  .button:active {
+    transform: none;
+  }
+}
