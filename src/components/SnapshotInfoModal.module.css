@@ -108,6 +108,22 @@
 }
 
 /* --------------------------------
+   Pixel Clouds — always-white interface
+-------------------------------- */
+
+.modal {
+  --color-text: #242424;
+  --color-text-muted: #858585;
+  --color-hover: #f0f0ee;
+}
+
+:global([data-theme="dark"]) .modal {
+  --color-text: #f2f2f2;
+  --color-text-muted: #aaaaaa;
+  --color-hover: #333333;
+}
+
+/* --------------------------------
    KEYFRAMES
 -------------------------------- */
 

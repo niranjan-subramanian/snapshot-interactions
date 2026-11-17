@@ -1,8 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import kohaku from "./assets/kohaku.png";
 import tancho from "./assets/tancho.png";
 import benigoi from "./assets/benigoi.png";
+
+import { Grid2X2, Grid2X2X} from "lucide-react";
+import { useSnapshotActions } from "../../components/SnapshotActionsContext";
 
 /** Minimal, interactive koi on a white background. Utilising pixi.js@7. */
 const PIXEL_SIZE = 8;
@@ -162,6 +165,38 @@ function moveFish(f, dt, w, h, pointer) {
 
 export default function PixiKoiPond() {
   const hostRef = useRef(null);
+  const appRef = useRef(null);
+  const sizeRef = useRef({ width: 1, height: 1 });
+  const pixelSizeRef = useRef(PIXEL_SIZE);
+  const [pixelated, setPixelated] = useState(true);
+  const { setActions } = useSnapshotActions();
+
+  // Keep the pixelation toggle in the shared snapshot navigation.
+  useEffect(() => {
+    setActions([
+      {
+        id: "pixelation",
+        label: pixelated ? "Disable pixelation" : "Enable pixelation",
+        icon: pixelated
+          ? <Grid2X2X size={15} strokeWidth={1.7} />
+          : <Grid2X2 size={15} strokeWidth={1.7} />,
+        onClick: () => setPixelated((current) => !current),
+      },
+    ]);
+    return () => setActions([]);
+  }, [pixelated, setActions]);
+
+  // Switch renderer resolution without resetting fish positions or animation.
+  useEffect(() => {
+    const pixelSize = pixelated ? PIXEL_SIZE : 1;
+    pixelSizeRef.current = pixelSize;
+    const app = appRef.current;
+    if (!app) return;
+    const { width, height } = sizeRef.current;
+    app.stage.scale.set(1 / pixelSize);
+    app.renderer.resize(Math.ceil(width / pixelSize), Math.ceil(height / pixelSize));
+    app.render();
+  }, [pixelated]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -174,6 +209,7 @@ export default function PixiKoiPond() {
     let fish = [];
     let width = Math.max(1, host.clientWidth);
     let height = Math.max(1, host.clientHeight);
+    sizeRef.current = { width, height };
     const pointer = { x: -10000, y: -10000 };
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -194,8 +230,8 @@ export default function PixiKoiPond() {
 
     const init = async () => {
       app = new PIXI.Application({
-        width: Math.ceil(width / PIXEL_SIZE),
-        height: Math.ceil(height / PIXEL_SIZE),
+        width: Math.ceil(width / pixelSizeRef.current),
+        height: Math.ceil(height / pixelSizeRef.current),
         backgroundAlpha: 0,
         antialias: false,
         autoDensity: false,
@@ -203,10 +239,12 @@ export default function PixiKoiPond() {
         powerPreference: "high-performance",
       });
       if (disposed) { app.destroy(true); return; }
+      appRef.current = app;
+      sizeRef.current = { width, height };
 
       // All fish remain in CSS-pixel coordinates. Only the render output
       // is downsampled, then enlarged to create a fixed pixel grid.
-      app.stage.scale.set(1 / PIXEL_SIZE);
+      app.stage.scale.set(1 / pixelSizeRef.current);
       Object.assign(app.view.style, {
         display: "block",
         width: "100%",
@@ -293,7 +331,9 @@ export default function PixiKoiPond() {
         }
         width = nextW;
         height = nextH;
-        app.renderer.resize(Math.ceil(width / PIXEL_SIZE), Math.ceil(height / PIXEL_SIZE));
+        sizeRef.current = { width, height };
+        const pixelSize = pixelSizeRef.current;
+        app.renderer.resize(Math.ceil(width / pixelSize), Math.ceil(height / pixelSize));
         for (const f of fish) {
           setFishSize(f, width);
           updateMeshPositions(f);
@@ -319,6 +359,7 @@ export default function PixiKoiPond() {
       window.removeEventListener("blur", onLeave);
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
+      appRef.current = null;
       app?.destroy(true, { children: true, texture: false, baseTexture: false });
     };
   }, []);

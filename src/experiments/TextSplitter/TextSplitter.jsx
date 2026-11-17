@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Scissors, Square} from "lucide-react";
+import { Scissors, Square, RotateCcw} from "lucide-react";
 import styles from "./TextSplitter.module.css";
-import ResetButton from "../../components/ui/ResetButton";
+import { useSnapshotActions } from "../../components/SnapshotActionsContext";
 
 const INITIAL_TEXT =
   "I'm a firm believer that good design is as little design as possible. " +
@@ -49,26 +49,43 @@ function measureLines(element) {
 }
 
 // Snap the cut preview to the closest boundary between rendered lines.
-function getCutBoundary(element, pointerY) {
-  const lines = measureLines(element);
-  if (lines.length < 2) return null;
-  const boundaries = lines.slice(0, -1).map((line, index) => ({
-    y: (line.bottom + lines[index + 1].top) / 2,
-    index: line.end,
-  }));
-  return boundaries.reduce((closest, boundary) =>
-    Math.abs(boundary.y - pointerY) < Math.abs(closest.y - pointerY)
+function getCachedCutBoundary(element, id, pointerY, cache) {
+  const text = element.textContent || "";
+  const width = element.clientWidth;
+
+  let entry = cache.current.get(id);
+
+  // Only recalculate when the text or its width changes.
+  if (!entry || entry.text !== text || entry.width !== width) {
+    const lines = measureLines(element);
+
+    const boundaries = lines.slice(0, -1).map((line, index) => ({
+      y: (line.bottom + lines[index + 1].top) / 2,
+      index: line.end,
+    }));
+
+    entry = { text, width, boundaries };
+    cache.current.set(id, entry);
+  }
+
+  if (!entry.boundaries.length) return null;
+
+  return entry.boundaries.reduce((closest, boundary) =>
+    Math.abs(boundary.y - pointerY) <
+    Math.abs(closest.y - pointerY)
       ? boundary
       : closest
   );
 }
 
-function CutCursor({ x, y, visible }) {
-  if (!visible) return null;
+function CutCursor({ cursorRef, visible }) {
   return (
     <div
+      ref={cursorRef}
       className={styles.cutCursor}
-      style={{ transform: `translate3d(${x - 14}px, ${y - 14}px, 0)` }}
+      style={{
+        display: visible ? "block" : "none",
+      }}
     >
       <svg viewBox="0 0 28 28" aria-hidden="true">
         <path d="M2 14H26" />
@@ -83,8 +100,23 @@ function TextBox({
   box, selected, splitting, previewY, contentRef,
   onPointerDown, onPointerMove, onPointerLeave, onSplit, onResizeStart,
 }) {
+  const boxRef = useRef(null);
+  const [measuredHeight, setMeasuredHeight] = useState(0);
+
+  // Observe the actual rendered box so the height updates when text wraps.
+  useLayoutEffect(() => {
+    const element = boxRef.current;
+    if (!element) return;
+    const update = () => setMeasuredHeight(Math.round(element.getBoundingClientRect().height));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
+      ref={boxRef}
       className={[
         styles.textBox,
         splitting ? styles.splitting : "",
@@ -101,7 +133,15 @@ function TextBox({
         }
       }}
     >
-      <span className={styles.boxLabel}>{box.label}</span>
+      {/* Label above the text box */}
+      <div className={styles.boxMeta}>
+        <span className={styles.boxLabel}>{box.label}</span>
+      </div>
+
+      {/* Dimensions below the text box */}
+      <span className={styles.boxDimensions}>
+        {Math.round(box.width)} × {measuredHeight} px
+      </span>
       <span className={`${styles.handle} ${styles.topLeft}`} />
       <span className={`${styles.handle} ${styles.topRight}`} />
       <span className={`${styles.handle} ${styles.bottomLeft}`} />
@@ -141,8 +181,24 @@ export default function TextSplitter() {
   const [selectedId, setSelectedId] = useState(1);
   const [splitMode, setSplitMode] = useState(false);
   const [preview, setPreview] = useState(null);
-  const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
   const [resetCount, setResetCount] = useState(0);
+
+  const cutBoundariesRef = useRef(new Map());
+  const cutCursorRef = useRef(null);
+
+  const { setActions } = useSnapshotActions();
+  useEffect(() => {
+    setActions([
+      {
+        id: "reset",
+        label: "Reset text splitter",
+        icon: <RotateCcw size={16} strokeWidth={1.7} />,
+        onClick: resetSplitter,
+      },
+  ]);
+
+  return () => setActions([]);
+}, [setActions]);
 
   const setContentRef = useCallback((id, node) => {
     if (node) contentRefs.current.set(id, node);
@@ -204,7 +260,6 @@ export default function TextSplitter() {
   function exitSplitMode() {
     setSplitMode(false);
     setPreview(null);
-    setCursor((current) => ({ ...current, visible: false }));
   }
 
   // Escape deactivates the tool, even when another element has focus.
@@ -213,7 +268,6 @@ export default function TextSplitter() {
       if (event.key !== "Escape") return;
       setSplitMode(false);
       setPreview(null);
-      setCursor((current) => ({ ...current, visible: false }));
     };
     document.addEventListener("keydown", onKeyDown, true);
     return () => document.removeEventListener("keydown", onKeyDown, true);
@@ -261,7 +315,13 @@ export default function TextSplitter() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    setCursor({ x: event.clientX - rect.left, y: event.clientY - rect.top, visible: splitMode });
+    if (splitMode && cutCursorRef.current) {
+        const x = event.clientX - rect.left - 14;
+        const y = event.clientY - rect.top - 14;
+
+        cutCursorRef.current.style.transform =
+          `translate3d(${x}px, ${y}px, 0)`;
+    }
 
     if (resizeRef.current) {
       const resize = resizeRef.current;
@@ -291,26 +351,35 @@ export default function TextSplitter() {
     resizeRef.current = null;
   }
 
-  function handleBoxPointerMove(event, id) {
-    if (!splitMode) return;
+function handleBoxPointerMove(event, id) {
+  if (!splitMode) return;
 
-    const element = contentRefs.current.get(id);
-    if (!element) return;
+  const element = contentRefs.current.get(id);
+  if (!element) return;
 
-    const rect = element.getBoundingClientRect();
-    const localY = event.clientY - rect.top;
-    const boundary = getCutBoundary(element, localY);
+  const rect = element.getBoundingClientRect();
+  const localY = event.clientY - rect.top;
 
-    setPreview(
-      boundary
-        ? {
-            boxId: id,
-            y: boundary.y,
-            index: boundary.index,
-          }
-        : null
-    );
-  }
+  const boundary = getCachedCutBoundary(
+    element,
+    id,
+    localY,
+    cutBoundariesRef
+  );
+
+  setPreview((current) => {
+    if (
+      current?.boxId === id &&
+      current?.index === boundary?.index
+    ) {
+      return current;
+    }
+
+    return boundary
+      ? { boxId: id, y: boundary.y, index: boundary.index }
+      : null;
+  });
+}
 
   // Cut whichever box was clicked, even if it wasn't selected beforehand.
   function handleSplit(id, event) {
@@ -321,7 +390,7 @@ export default function TextSplitter() {
     if (!box || !element || !canvas) return;
 
     const localY = event.clientY - element.getBoundingClientRect().top;
-    const boundary = getCutBoundary(element, localY);
+    const boundary = getCachedCutBoundary(element,id,localY,cutBoundariesRef);
     if (!boundary) return;
     const upperText = box.text.slice(0, boundary.index);
     const lowerText = box.text.slice(boundary.index);
@@ -362,12 +431,12 @@ function resetSplitter() {
   dragRef.current = null;
   resizeRef.current = null;
   nextIdRef.current = 2;
+  cutBoundariesRef.current.clear();
 
   setSelectedId(1);
   setSplitMode(false);
   setPreview(null);
-  setCursor({ x: 0, y: 0, visible: false });
-
+  cutBoundariesRef.current.clear();
   setBoxes([
     {
       id: 1,
@@ -395,7 +464,6 @@ function resetSplitter() {
         onPointerCancel={handlePointerUp}
         onPointerLeave={() => {
           handlePointerUp();
-          setCursor((current) => ({ ...current, visible: false }));
           setPreview(null);
         }}
       >
@@ -414,11 +482,10 @@ function resetSplitter() {
             onResizeStart={handleResizeStart}
           />
         ))}
-        <CutCursor x={cursor.x} y={cursor.y} visible={cursor.visible} />
+        <CutCursor cursorRef={cutCursorRef} visible={splitMode}/>
       </div>
 
       <div className={styles.controls}>
-        <ResetButton onClick={resetSplitter} />
 
         <button
           type="button"

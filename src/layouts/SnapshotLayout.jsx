@@ -46,6 +46,8 @@ function SnapshotLayoutContent({
 
   const SnapshotComponent = snapshot.component;
   const isFullScreen = snapshot.layout === "fullscreen";
+  const isPixelClouds = snapshot.slug === "pixel-clouds";
+  console.log("Current snapshot ID:", snapshot.id);
 
   /**
    * Press Escape to leave preview mode
@@ -76,7 +78,11 @@ function SnapshotLayoutContent({
   }
 
   return (
-    <main className={styles.page}>
+    <main
+        className={`${styles.page} ${
+          isPixelClouds ? styles.pixelCloudsPage : ""
+        }`}
+      >
       {/* Fixed page-level controls */}
       <div
         className={styles.pageControls}

@@ -27,7 +27,6 @@ export const snapshots = [
         "Challenge: by reszing the text boxes can you form more than 13 text boxes?\n\nI've always found graphic design tools unnecessarily annoying when it comes to splitting text boxes as you often have to create copies and delete parts of them separately.\n\nThe splitting tool uses JavaScript DOM measurements to detect individual lines of text and determine split points. Pointer events handle dragging, resizing, and splitting boxes around the playground canvas.",
         component: TextSplitter,
         layout: "fullscreen",
-        restart: true,
     },
         {
         id: "003",
@@ -35,9 +34,10 @@ export const snapshots = [
         title: "Pixel-clouds",
         path: "/snapshots/pixel-clouds",
         description:
-        "Yep",
+        "A little experiment in recreating a moving sky using pixel art. The clouds slowly drift across the screen, with the entire scene rendered as a grid of oversized pixels.\n\nThe sky is drawn using layered radial gradients on an HTML canvas (pretty old school), while transparent cloud images are animated over the top.\n\nTurns out a couple of clouds and some gradients can make a pretty convincing sky.",
         component: PixelClouds,
         restart: false,
+        layout: "fullscreen",
     },
     {
         id: "004",
@@ -64,9 +64,10 @@ export const snapshots = [
         slug: "pixi-koi-pond",
         title: "Pixi-Koi-Pond",
         path: "/snapshots/pixi-koi-pond",
-        description: "An interactive koi pond",
+        description: "A small interactive koi pond inspired by Nagomi where the fish swim around on their own, but seem to not like the cursor very much.\n\nBuilt using PixiJS, with each .png fish rendered as a deformable mesh that bends and moves as it swims. The entire scene is rendered at a lower resolution to create the pixelated effect, which can be toggled off to see the original artwork.\n\nThe hardest part was getting the fish's bending movements to swim accurately rather than static images sliding around the screen.",
         component: PixiKoiPond,    
         restart: false,    
+        layout: "fullscreen",
     },
     
 ];
