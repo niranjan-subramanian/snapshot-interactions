@@ -4,6 +4,7 @@ import TopographicButton from "./experiments/TopographicButton/TopographicButton
 import Dandelion from "./experiments/Dandelion/Dandelion";
 import PixiKoiPond from "./experiments/PixiKoiPond/PixiKoiPond";
 import PixelClouds from "./experiments/PixelClouds/PixelClouds";
+import SpatialArchive from "./experiments/SpatialArchive/SpatialArchive";
 
 
 //STUDIES
@@ -59,7 +60,7 @@ export const snapshots = [
         restart: false,
         
     },
-        {
+    {
         id: "006",
         slug: "pixi-koi-pond",
         title: "Pixi-Koi-Pond",
@@ -68,6 +69,17 @@ export const snapshots = [
         component: PixiKoiPond,    
         restart: false,    
         layout: "fullscreen",
+    },
+    {
+    id: "007",
+    slug: "spatial-archive",
+    title: "Spatial-archive",
+    path: "/snapshots/spatial-archive",
+    description:
+        "An interactive collection of images arranged across an explorable canvas. Drag to move around, zoom to explore, and select individual images to bring them into focus.",
+    component: SpatialArchive,
+    restart: false,
+    layout: "fullscreen",
     },
     
 ];
